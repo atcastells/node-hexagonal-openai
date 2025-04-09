@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# User interaction with agent
+
+For any interaction of the user with the agent, check if what the user asked could be done before by the agent if its not the first chat message.
+
+Example
+
+"Run the test" after a test has been created.
+
+If there is any finding consider taking actions so this will not happen again.

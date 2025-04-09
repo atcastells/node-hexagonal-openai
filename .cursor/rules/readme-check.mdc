@@ -1,0 +1,29 @@
+---
+description: Always check the project README in the root directory
+globs: 
+alwaysApply: true
+---
+# Project README Rule
+
+When working with this project, always check the README.md file in the root directory first for:
+
+## Important Information
+
+- Project overview and purpose
+- Installation instructions
+- Configuration requirements
+- Environment setup details
+- Deployment guidelines
+
+## Development Workflow
+
+1. Understand project structure from README
+2. Follow coding conventions described in README
+3. Check for any dependencies or requirements listed
+4. Review contribution guidelines if available
+
+## Always Consider
+
+- The README is the authoritative source for project-wide conventions
+- Any deviations from the README should be explicitly justified
+- Updates to the codebase may require updates to the README

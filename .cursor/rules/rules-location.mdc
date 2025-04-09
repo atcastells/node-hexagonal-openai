@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursor Rules Location
+
+Locate all rules in .cursor/rules
+
+check the rule-creation-guide rule for every edit, create, delete rule.
