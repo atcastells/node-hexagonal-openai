@@ -104,6 +104,73 @@ The hexagonal architecture, also known as ports and adapters pattern, divides th
 
 🚧 Under Development
 
+## Docker Setup
+
+You can run this application with Docker using the provided Docker Compose configuration.
+
+### Development Mode
+
+```bash
+# Build and run the development container
+docker-compose up app-dev
+
+# Or run in detached mode
+docker-compose up -d app-dev
+```
+
+The development container is configured with hot reloading, which means your code changes will automatically trigger a server restart. This is implemented using:
+
+- Volume mounts that sync your local code with the container
+- ts-node-dev with polling enabled for file change detection
+- Proper file permissions and nodemon as a backup watcher
+
+When you edit any TypeScript file in the `src` directory, the server will automatically restart with your changes.
+
+### Production Mode
+
+```bash
+# Build and run the production container
+docker-compose up app-prod
+
+# Or run in detached mode
+docker-compose up -d app-prod
+```
+
+### Using External LLM Services
+
+The Docker setup is configured to access LLM services (like LM Studio) running on your host machine using `host.docker.internal`. 
+
+For using LM Studio, make sure it's running on your host machine and the base URL in the `.env` file or environment variables is set correctly:
+
+```
+LLM_BASE_URL=http://host.docker.internal:1234
+```
+
+### Ngrok Integration
+
+The Docker setup includes ngrok integration to expose your local development server to the internet, which is useful for:
+
+- Testing webhooks
+- Sharing your development environment with external collaborators
+- Testing your application from different networks
+
+To use ngrok:
+
+1. Run the development container with ngrok:
+   ```bash
+   docker-compose up app-dev ngrok
+   ```
+
+2. Access the ngrok admin interface at [http://localhost:4040](http://localhost:4040) to see your public URL and inspect traffic.
+
+3. Your application will be available at the URL provided by ngrok in the logs or admin interface.
+
+The authentication token is pre-configured in the docker-compose.yml file. If you want to use your own token, you can modify it there or set it as an environment variable:
+
+```bash
+NGROK_AUTHTOKEN=your_token docker-compose up app-dev ngrok
+```
+
 ## API Documentation
 
 - [Text Completion API](docs/TextCompletionAPI.md) - API for generating text completions using LLMs 

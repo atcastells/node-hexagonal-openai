@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # Development service
+  app-dev:
+    build: 
+      context: .
+      target: development
+    container_name: node-hexagonal-dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=sqlite:./database.sqlite
+      - LLM_PROVIDER_TYPE=${LLM_PROVIDER_TYPE:-lmstudio}
+      - LLM_BASE_URL=${LLM_BASE_URL:-http://host.docker.internal:1234}
+      - LLM_DEFAULT_MODEL=${LLM_DEFAULT_MODEL:-qwen2.5-7b-instruct-1m}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: npm run dev
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - app-network
+
+  # Production service
+  app-prod:
+    build:
+      context: .
+      target: production
+    container_name: node-hexagonal-prod
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=sqlite:./database.sqlite
+      - LLM_PROVIDER_TYPE=${LLM_PROVIDER_TYPE:-lmstudio}
+      - LLM_BASE_URL=${LLM_BASE_URL:-http://host.docker.internal:1234}
+      - LLM_DEFAULT_MODEL=${LLM_DEFAULT_MODEL:-qwen2.5-7b-instruct-1m}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: npm start
+    networks:
+      - app-network
+
+  # Ngrok service for exposing the application to the internet
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok
+    ports:
+      - "4040:4040"
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    command: http app-dev:3000 --domain=${NGROK_DOMAIN}
+    depends_on:
+      - app-dev
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge 

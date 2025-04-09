@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only --poll --interval 1000 src/index.ts",
     "test": "jest",
     "test:unit": "jest --testMatch='**/unit/**/*.test.ts'",
     "test:component": "jest --testMatch='**/component/**/*.test.ts'",
