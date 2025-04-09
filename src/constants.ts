@@ -4,7 +4,13 @@ export enum LLM_PROVIDER_TYPES {
   MOCK = 'mock'
 }
 
+export enum REPOSITORY_TYPES {
+  IN_MEMORY = 'inmemory',
+  MONGODB = 'mongodb'
+}
+
 export const SERVICES = {
-    LLM: 'LLMApplicationService'
+    LLM: 'LLMApplicationService',
+    USER_REPOSITORY: 'UserRepository'
 }
 

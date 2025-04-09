@@ -8,6 +8,7 @@ This project demonstrates a clean hexagonal architecture (ports and adapters pat
 - Separation of concerns with Domain, Application, and Infrastructure layers
 - LLM integrations (OpenAI, LM Studio) via adapter pattern
 - Text Completion API
+- MongoDB adapter for persistent data storage
 
 ## Project Structure
 
@@ -57,6 +58,37 @@ The hexagonal architecture, also known as ports and adapters pattern, divides th
    - Secondary Adapters: Implement outgoing communications (e.g., database repositories)
    - Framework-specific code
 
+## Secondary Adapters
+
+The project includes the following secondary adapters:
+
+- InMemoryUserRepository: In-memory repository for testing and development
+- MongoDBUserRepository: Repository implementation for MongoDB
+- LLM Adapters:
+  - OpenAIAdapter: Integration with OpenAI API
+  - LMStudioAdapter: Integration with local LM Studio
+  - MockLLMAdapter: Mock implementation for testing
+
+## MongoDB Setup
+
+The project includes MongoDB support for persistent data storage:
+
+1. The MongoDB connection is configured through environment variables:
+   ```
+   MONGODB_URI=mongodb://localhost:27017
+   MONGODB_DB_NAME=hexagonal-app
+   REPOSITORY_TYPE=mongodb
+   ```
+
+2. When running with Docker, a MongoDB container is included and automatically connected.
+
+3. To use the MongoDB adapter, update your `.env` file or environment variables with the appropriate MongoDB connection settings.
+
+4. MongoDB connections are managed throughout the application lifecycle:
+   - Connection is established at application startup
+   - Connection is properly closed during graceful shutdown
+   - A singleton MongoManager handles connection state to avoid multiple connections
+
 ## Setup and Installation
 
 1. Install dependencies:
@@ -84,8 +116,8 @@ The hexagonal architecture, also known as ports and adapters pattern, divides th
 - Node.js
 - TypeScript
 - Express.js (for REST API)
+- MongoDB (for data persistence)
 - Jest (for testing)
-- TypeORM (for database)
 
 ## Development Guidelines
 

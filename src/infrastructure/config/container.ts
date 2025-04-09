@@ -6,15 +6,26 @@ import { ChatCompletionUseCase } from '../../application/usecases/ChatCompletion
 import { TextCompletionUseCase } from '../../application/usecases/TextCompletionUseCase';
 import { ChatCompletionController } from '../adapters/primary/http/controllers/ChatCompletionController';
 import { TextCompletionController } from '../adapters/primary/http/controllers/TextCompletionController';
-import { SERVICES } from '../../constants';
+import { SERVICES, REPOSITORY_TYPES } from '../../constants';
+import { UserRepositoryFactory, RepositoryConfig } from '../adapters/secondary/UserRepositoryFactory';
+import { UserRepository } from '../../domain/repositories/UserRepository';
+
 /**
  * Configure the DI container with all required services
  * @param config The LLM provider configuration
+ * @param repositoryConfig The repository configuration
  */
-export function configureContainer(config: LLMProviderConfig): void {
+export function configureContainer(
+  config: LLMProviderConfig,
+  repositoryConfig: RepositoryConfig = { type: REPOSITORY_TYPES.IN_MEMORY }
+): void {
   // Register the LLM adapter as a service
   const llmAdapter = LLMAdapterFactory.createAdapter(config);
   Container.set(SERVICES.LLM, llmAdapter);
+  
+  // Register the UserRepository
+  const userRepository = UserRepositoryFactory.createRepository(repositoryConfig);
+  Container.set(SERVICES.USER_REPOSITORY, userRepository);
   
   // The rest of the services are automatically registered via @Service decorators
   // We can get instances of them directly from the container
@@ -50,4 +61,12 @@ export function getChatCompletionController(): ChatCompletionController {
  */
 export function getTextCompletionController(): TextCompletionController {
   return Container.get(TextCompletionController);
+}
+
+/**
+ * Get the UserRepository from the container
+ * @returns A configured instance of UserRepository
+ */
+export function getUserRepository(): UserRepository {
+  return Container.get(SERVICES.USER_REPOSITORY);
 } 
