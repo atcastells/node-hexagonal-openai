@@ -1,4 +1,5 @@
 import { LLMApplicationService } from '../services/LLMApplicationService';
+import { Service, Inject } from 'typedi';
 
 export interface TextCompletionRequest {
   text: string;
@@ -19,8 +20,12 @@ export interface TextCompletionResponse {
 /**
  * Use case for text completion functionality
  */
+@Service()
 export class TextCompletionUseCase {
-  constructor(private readonly llmService: LLMApplicationService) {}
+  constructor(
+    @Inject()
+    private readonly llmService: LLMApplicationService
+  ) {}
 
   /**
    * Complete the provided text using the LLM service

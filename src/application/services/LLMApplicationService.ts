@@ -1,7 +1,12 @@
 import { ChatMessage, LLMRequestOptions, LLMResponse, LLMServicePort } from '../ports/LLMServicePort';
-
+import { Service, Inject } from 'typedi';
+import { SERVICES } from '../../constants'; 
+@Service()
 export class LLMApplicationService {
-  constructor(private readonly llmService: LLMServicePort) {}
+  constructor(
+    @Inject(SERVICES.LLM)
+    private readonly llmService: LLMServicePort
+  ) {}
 
   /**
    * Generate a chat completion from the LLM service

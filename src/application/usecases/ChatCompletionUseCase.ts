@@ -1,5 +1,6 @@
 import { ChatMessage } from '../ports/LLMServicePort';
 import { LLMApplicationService } from '../services/LLMApplicationService';
+import { Service, Inject } from 'typedi';
 
 export interface ChatCompletionRequest {
   messages: ChatMessage[];
@@ -20,8 +21,12 @@ export interface ChatCompletionResponse {
 /**
  * Use case for chat completion functionality
  */
+@Service()
 export class ChatCompletionUseCase {
-  constructor(private readonly llmService: LLMApplicationService) {}
+  constructor(
+    @Inject()
+    private readonly llmService: LLMApplicationService
+  ) {}
 
   /**
    * Process a chat completion request using the LLM service

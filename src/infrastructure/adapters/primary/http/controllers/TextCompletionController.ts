@@ -1,8 +1,13 @@
 import { Request, Response } from 'express';
 import { TextCompletionUseCase } from '../../../../../application/usecases/TextCompletionUseCase';
+import { Service, Inject } from 'typedi';
 
+@Service()
 export class TextCompletionController {
-  constructor(private readonly textCompletionUseCase: TextCompletionUseCase) {}
+  constructor(
+    @Inject()
+    private readonly textCompletionUseCase: TextCompletionUseCase
+  ) {}
 
   /**
    * Handle text completion request

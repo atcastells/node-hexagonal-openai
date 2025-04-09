@@ -1,9 +1,14 @@
 import { Request, Response } from 'express';
 import { ChatCompletionUseCase } from '../../../../../application/usecases/ChatCompletionUseCase';
 import { ChatMessage } from '../../../../../application/ports/LLMServicePort';
+import { Service, Inject } from 'typedi';
 
+@Service()
 export class ChatCompletionController {
-  constructor(private readonly chatCompletionUseCase: ChatCompletionUseCase) {}
+  constructor(
+    @Inject()
+    private readonly chatCompletionUseCase: ChatCompletionUseCase
+  ) {}
 
   /**
    * Handle chat completion request

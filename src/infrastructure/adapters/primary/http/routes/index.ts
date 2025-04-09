@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { createChatCompletionRouter } from './chatCompletionRoutes';
+import { createTextCompletionRouter } from './textCompletionRoutes';
 import { LLMProviderConfig } from '../../../secondary/llm/LLMAdapterFactory';
 
 /**
@@ -12,6 +13,7 @@ export const createApiRouter = (llmConfig: LLMProviderConfig): Router => {
   
   // Register routes
   router.use('/chat', createChatCompletionRouter(llmConfig));
+  router.use('/text', createTextCompletionRouter(llmConfig));
   
   return router;
 }; 

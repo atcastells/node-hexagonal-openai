@@ -1,20 +1,25 @@
+import 'reflect-metadata'; // Required for TypeDI
 import express from 'express';
 import dotenv from 'dotenv';
 import { createApiRouter } from './infrastructure/adapters/primary/http/routes';
 import { LLMProviderConfig } from './infrastructure/adapters/secondary/llm/LLMAdapterFactory';
-
+import { configureContainer } from './infrastructure/config/container';
+import { LLM_PROVIDER_TYPES } from './constants';
 // Load environment variables
 dotenv.config();
 
 // LLM Provider Configuration
 const llmConfig: LLMProviderConfig = {
-  type: (process.env.LLM_PROVIDER_TYPE as 'openai' | 'lmstudio' | 'mock') || 'openai',
+  type: (process.env.LLM_PROVIDER_TYPE as LLM_PROVIDER_TYPES) || LLM_PROVIDER_TYPES.OPENAI,
   apiKey: process.env.OPENAI_API_KEY,
   baseUrl: process.env.LLM_BASE_URL || 'https://api.openai.com/v1',
   defaultModel: process.env.LLM_DEFAULT_MODEL || 'gpt-3.5-turbo',
   defaultMaxTokens: parseInt(process.env.LLM_DEFAULT_MAX_TOKENS || '1000'),
   defaultTemperature: parseFloat(process.env.LLM_DEFAULT_TEMPERATURE || '0.7')
 };
+
+// Configure dependency injection container
+configureContainer(llmConfig);
 
 // Create Express app
 const app = express();
