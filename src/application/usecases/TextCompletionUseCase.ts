@@ -31,16 +31,12 @@ export class TextCompletionUseCase {
     const { text, maxTokens, temperature } = request;
     
     // Call the LLM service to generate the completion
-    const response = await this.llmService.generateCompletion(text, {
-      maxTokens,
-      temperature
-    });
+    const response = await this.llmService.generateTextCompletion(text, temperature, maxTokens);
     
     // Return the formatted response
     return {
-      completion: response.text,
+      completion: response,
       originalText: text,
-      usage: response.usage
     };
   }
 } 

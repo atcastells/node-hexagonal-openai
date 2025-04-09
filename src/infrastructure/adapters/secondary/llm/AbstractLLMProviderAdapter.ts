@@ -1,4 +1,4 @@
-import { LLMRequestOptions, LLMResponse, LLMServicePort } from '../../../../application/ports/LLMServicePort';
+import { ChatMessage, LLMRequestOptions, LLMResponse, LLMServicePort } from '../../../../application/ports/LLMServicePort';
 
 export abstract class AbstractLLMProviderAdapter implements LLMServicePort {
   constructor(protected readonly config: {
@@ -9,6 +9,7 @@ export abstract class AbstractLLMProviderAdapter implements LLMServicePort {
     defaultTemperature: number;
   }) {}
 
+  abstract generateChatCompletion(messages: ChatMessage[], options?: LLMRequestOptions): Promise<LLMResponse>;
   abstract generateCompletion(prompt: string, options?: LLMRequestOptions): Promise<LLMResponse>;
 
   protected mergeOptions(options?: LLMRequestOptions): LLMRequestOptions {
@@ -20,6 +21,7 @@ export abstract class AbstractLLMProviderAdapter implements LLMServicePort {
       frequencyPenalty: options?.frequencyPenalty || 0,
       presencePenalty: options?.presencePenalty || 0,
       stop: options?.stop || [],
+      systemPrompt: options?.systemPrompt,
     };
   }
 } 

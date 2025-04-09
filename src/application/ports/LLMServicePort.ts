@@ -1,3 +1,8 @@
+export interface ChatMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
 export interface LLMRequestOptions {
   model?: string;
   temperature?: number;
@@ -6,6 +11,7 @@ export interface LLMRequestOptions {
   frequencyPenalty?: number;
   presencePenalty?: number;
   stop?: string[];
+  systemPrompt?: string;
 }
 
 export interface LLMResponse {
@@ -19,10 +25,11 @@ export interface LLMResponse {
 
 export interface LLMServicePort {
   /**
-   * Generates a completion for the given prompt using the configured LLM provider
-   * @param prompt The prompt to generate a completion for
-   * @param options Optional parameters for the completion request
+   * Generates a chat completion for the given messages using the configured LLM provider
+   * @param messages Array of chat messages representing the conversation history
+   * @param options Optional parameters for the chat completion request
    * @returns A promise that resolves to the completion response
    */
+  generateChatCompletion(messages: ChatMessage[], options?: LLMRequestOptions): Promise<LLMResponse>;
   generateCompletion(prompt: string, options?: LLMRequestOptions): Promise<LLMResponse>;
 } 

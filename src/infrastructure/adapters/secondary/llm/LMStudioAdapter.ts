@@ -1,4 +1,4 @@
-import { LLMRequestOptions, LLMResponse } from '../../../../application/ports/LLMServicePort';
+import { ChatMessage, LLMRequestOptions, LLMResponse } from '../../../../application/ports/LLMServicePort';
 import { AbstractLLMProviderAdapter } from './AbstractLLMProviderAdapter';
 
 interface LMStudioErrorResponse {
@@ -9,7 +9,12 @@ interface LMStudioErrorResponse {
 
 interface LMStudioCompletionResponse {
   choices: {
-    text: string;
+    text?: string;
+    message?: {
+      content: string;
+    };
+    index?: number;
+    finish_reason?: string;
   }[];
   usage?: {
     prompt_tokens: number;
@@ -28,25 +33,39 @@ export class LMStudioAdapter extends AbstractLLMProviderAdapter {
     super(config);
   }
 
-  async generateCompletion(prompt: string, options?: LLMRequestOptions): Promise<LLMResponse> {
+  async generateChatCompletion(messages: ChatMessage[], options?: LLMRequestOptions): Promise<LLMResponse> {
     const mergedOptions = this.mergeOptions(options);
     
     try {
-      const response = await fetch(`${this.config.baseUrl}/v1/completions`, {
+      // Prepare messages array with system prompt if provided
+      let messagesList = [...messages];
+      
+      // If systemPrompt is provided in options and there's no system message yet, add it
+      if (mergedOptions.systemPrompt && !messages.some(m => m.role === 'system')) {
+        messagesList = [
+          { role: 'system', content: mergedOptions.systemPrompt },
+          ...messagesList
+        ];
+      }
+      
+      const requestBody = {
+        model: mergedOptions.model,
+        messages: messagesList,
+        max_tokens: mergedOptions.maxTokens,
+        temperature: mergedOptions.temperature,
+        top_p: mergedOptions.topP,
+        frequency_penalty: mergedOptions.frequencyPenalty,
+        presence_penalty: mergedOptions.presencePenalty,
+        stop: mergedOptions.stop,
+      };
+
+      // LM Studio supports chat completions API
+      const response = await fetch(`${this.config.baseUrl}/v1/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          prompt,
-          model: mergedOptions.model,
-          max_tokens: mergedOptions.maxTokens,
-          temperature: mergedOptions.temperature,
-          top_p: mergedOptions.topP,
-          frequency_penalty: mergedOptions.frequencyPenalty,
-          presence_penalty: mergedOptions.presencePenalty,
-          stop: mergedOptions.stop,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -57,7 +76,7 @@ export class LMStudioAdapter extends AbstractLLMProviderAdapter {
       const data = await response.json() as LMStudioCompletionResponse;
       
       return {
-        text: data.choices[0]?.text || '',
+        text: data.choices[0]?.message?.content || '',
         usage: {
           promptTokens: data.usage?.prompt_tokens,
           completionTokens: data.usage?.completion_tokens,
@@ -66,9 +85,9 @@ export class LMStudioAdapter extends AbstractLLMProviderAdapter {
       };
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`Failed to generate completion: ${error.message}`);
+        throw new Error(`Failed to generate chat completion: ${error.message}`);
       }
-      throw new Error('Failed to generate completion');
+      throw new Error('Failed to generate chat completion');
     }
   }
 } 
